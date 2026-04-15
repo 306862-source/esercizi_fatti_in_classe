@@ -26,8 +26,8 @@
 					<!-- Hero -->
 						<section id="hero" class="container">
 							<header>
-								<h2>Mappa</h2>
-								<div id="mapid" style="width: 1200px; height: 400px; margin: 0 auto;"></div>
+								<h2>Grafico</h2>
+								<div id="graphid" style="width: 1200px; height: 400px; margin: 0 auto;"></div>
 							</header>
 						</section>
 				</div>
@@ -77,6 +77,7 @@
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
 			<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+			<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
 
 			<script>
@@ -87,12 +88,40 @@
 					$.getJSON(url, function(data) {
 						console.log(data);
 						$('#num_impianti').html(data.length);
-						map = L.map('mapid').setView([data[0]['latitude'], data[0]['longitude']], 10);
-						L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-						data.forEach(function(impianto) {
-							// L.marker([impianto['latitude'], impianto['longitude']]).addTo(map).bindPopup("<b>" + impianto['name'] + "</b>");
-						L.marker([impianto['latitude'], impianto['longitude']]).addTo(map).bindPopup("<a href='graph.html?id=" + impianto['name'] + "' style='color: black;'>" + impianto['name'] + "</a>");
-						});
+						
+						// codice grafici
+						google.charts.load('current', {'packages':['corechart']});
+						google.charts.setOnLoadCallback(drawChart);
+
+						function drawChart() {
+							var chartData = [['Anno', 'Values']];
+							var currentYear = 2026;
+							var dataLength = data[0]['data'].length;
+							var startYear = currentYear - dataLength + 1;
+							
+							data[0]['data'].forEach(function(value, index) {
+								var year = startYear + index;
+								chartData.push([String(year), value]);
+							});
+							
+							var chartTable = google.visualization.arrayToDataTable(chartData);
+
+							var options = {
+								title: 'Impianto 1 - Dati Serie Temporale',
+								hAxis: {
+									title: 'Anno',
+									titleTextStyle: {color: '#333'},
+									slantedText: true,
+									slantedTextAngle: 45
+								},
+								vAxis: {minValue: 0},
+								pointSize: 4,
+								lineWidth: 2
+							};
+
+							var chart = new google.visualization.AreaChart(document.getElementById('graphid'));
+							chart.draw(chartTable, options);
+						}
 					});
 				});
 			</script>
