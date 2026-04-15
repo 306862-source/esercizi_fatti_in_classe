@@ -77,9 +77,13 @@
 
 			<script>
 				$(document).ready(function() {
-					// Simulazione del numero di impianti
-					var ni = 10; // Sostituisci con il numero reale
-					$('#num_impianti').text(ni);
+					// recuperiamo il dato dal web
+					url = "https://raw.githubusercontent.com/306862-source/esercizi_fatti_in_classe/refs/heads/main/frontendweb1/html5up-telephasic/data.json?token=GHSAT0AAAAAAD2QWYIYV5GSHOAVGFPT5FZ62O7MRWA";
+					var num_impianti = 0
+					$.getJSON(url, function(data) {
+						console.log(data);
+						$('#num_impianti').html(data.length);
+					});
 				});
 			</script>
 
