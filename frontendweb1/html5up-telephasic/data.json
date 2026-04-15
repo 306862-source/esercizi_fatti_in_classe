@@ -1,1 +1,14 @@
-[{"id": 1, "name": "Impianto 1"}, {"id": 2, "name": "Impianto 2"}]
+[
+  {
+    "id": 1,
+    "name": "Impianto 1",
+    "latitude": 44.6125,
+    "longitude": 10.6234
+  },
+  {
+    "id": 2,
+    "name": "Impianto 2",
+    "latitude": 44.6478,
+    "longitude": 10.6156
+  }
+]
