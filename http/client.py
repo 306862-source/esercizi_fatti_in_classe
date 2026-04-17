@@ -5,7 +5,7 @@ from pathlib import Path
 from requests import post
 
 
-BASE_URL = 'http://localhost:80'
+BASE_URL = 'http://34.159.25.227:80'
 CSV_PATH = Path(__file__).with_name('CleanData_PM10.csv')
 SENSOR_NAME = 'sensor1'
 INTERVAL_SECONDS = 3
