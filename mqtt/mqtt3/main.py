@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, redirect, url_for
 from flask_mqtt import Mqtt
 
 app = Flask(__name__)
@@ -16,19 +16,33 @@ mqtt = Mqtt(app)
 # Flask route
 @app.route('/')
 def home():
+
+
     data = [["Year", "Values"]]
     for entry in database:
         try:
-            datetime_str, pm10_value = entry.split(',')
-            year = datetime_str.split(' ')[0].split('-')[0]  # Extract year from datetime
-            data.append([year, float(pm10_value)])
+            datetime_str, pm10_value = entry.split(",")
+            year = datetime_str.split(" ")[0].split("-")[0]  # Estrae l'anno
+            data.append([year, float(pm10_value)])  # Aggiunge l'anno e il valore PM10 alla lista
         except Exception as e:
-            print(f"Error processing entry '{entry}': {e}")
-    return render_template('graph.html', title='home', data=str(data))
+            print(f"Errore nel parsing dell'entry '{entry}': {e}")
+    return render_template('graph.html', data=str(data))
 
 @app.route('/show')
 def show():
     return str(database)
+
+
+@app.route('/start', methods=['GET'])
+def start():
+    mqtt.publish('control', 'start')
+    return redirect(url_for('home'))
+
+
+@app.route('/stop', methods=['GET'])
+def stop():
+    mqtt.publish('control', 'stop')
+    return redirect(url_for('home'))
 
 # Callback for MQTT message received
 @mqtt.on_message()
@@ -36,7 +50,8 @@ def handle_mqtt_message(client, userdata, message):
     msg_payload = message.payload.decode()
     print(f"Received MQTT message: {msg_payload} on topic {message.topic}")
     database.append(msg_payload)  
-    print(f"Current database state: {database}")
+    print("Current Database State:", database)
+    # ['2020-01-01 00:00:00,42.0', ....]
     return 'ok'
 
 
